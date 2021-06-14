@@ -6,7 +6,7 @@
 
 ## SPEC
 
-###Shapes
+### Shapes
  Point
  Text
  Line
@@ -17,54 +17,54 @@
  Image
  Sprite
  
-###Directives
+### Directives
  'render invisible'
 
-###Methods
- write
- alert
- confirm
- prompt
- stop
- collide
- abs
- ceil
- cos
- exp
- floor
- max
- min
- pow
- Number
- random
- round
- sin
- sqrt
- tan
- isInteger
- toExponential
- toFixed
- toPrecision
- toString
- charAt
- charCodeAt
- concat
- endsWith
- fromCharCode
- includes
- indexOf
- lastIndexOf
- repeat
- replace
- slice
- split
- substr
- substring
- toLowerCase
- toUpperCase
- trim
+### Methods
+ - write
+ - alert
+ - confirm
+ - prompt
+ - stop
+ - collide
+ - abs
+ - ceil
+ - cos
+ - exp
+ - floor
+ - max
+ - min
+ - pow
+ - Number
+ - random
+ - round
+ - sin
+ - sqrt
+ - tan
+ - isInteger
+ - toExponential
+ - toFixed
+ - toPrecision
+ - toString
+ - charAt
+ - charCodeAt
+ - concat
+ - endsWith
+ - fromCharCode
+ - includes
+ - indexOf
+ - lastIndexOf
+ - repeat
+ - replace
+ - slice
+ - split
+ - substr
+ - substring
+ - toLowerCase
+ - toUpperCase
+ - trim
 
-###Events & Properties
+### Events & Properties
  mouse: y, z, down
  keyboard: key, keyCode
  onClick
