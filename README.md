@@ -7,18 +7,18 @@
 ## SPEC
 
 ### Shapes
- Point
- Text
- Line
- Rectangle
- Circle
- Triangle
- Oval
- Image
- Sprite
+ - Point
+ - Text
+ - Line
+ - Rectangle
+ - Circle
+ - Triangle
+ - Oval
+ - Image
+ - Sprite
  
 ### Directives
- 'render invisible'
+ - 'render invisible'
 
 ### Methods
  - write
@@ -65,10 +65,10 @@
  - trim
 
 ### Events & Properties
- mouse: y, z, down
- keyboard: key, keyCode
- onClick
- onMouseDown
- onMouseUp
- onKeyDown
- onKeyUp
+ - mouse: y, z, down
+ - keyboard: key, keyCode
+ - onClick
+ - onMouseDown
+ - onMouseUp
+ - onKeyDown
+ - onKeyUp
