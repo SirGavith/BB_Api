@@ -51,6 +51,15 @@ class Utils {
         out.y += cy
         return out
     }
+
+    static drawShapeHelper(fill, borderColor, borderWidth) {
+        ctx.fillStyle = Utils.parseColor(fill)
+        if (!borderWidth) {
+            borderColor = 'rgba(0,0,0,0)'
+        }
+        ctx.strokeStyle = Utils.parseColor(borderColor)
+        ctx.lineWidth = borderWidth;
+    }
 }
 
 function background(color = 'white') {
@@ -68,6 +77,56 @@ class Shape {
     }
     draw() {
         throw new Error("Method 'draw()' must be implemented.")
+    }
+}
+
+class Point extends Shape {
+    constructor(x, y) {
+        super(x, y)
+    }
+    draw() {
+        new Circle(this.x, this.y, 3).draw()
+    }
+}
+
+class Text extends Shape {
+    constructor(x, y, text, font, fontSize, fill = 'black', borderColor = 'black', borderWidth = 0) {
+        super(x, y)
+        this.text = text
+        this.font = font
+        this.fontSize = fontSize
+        this.fill = fill
+        this.borderColor = borderColor
+        this.borderWidth = borderWidth
+    }
+    draw() {
+        ctx.font = String(this.fontSize) + "px " + this.font
+        ctx.lineWidth = this.borderWidth;
+        ctx.fillStyle = Utils.parseColor(this.fill)
+        ctx.strokeStyle = Utils.parseColor(this.borderColor)
+        ctx.fillText(this.text, this.x, this.y)
+        if (this.borderWidth > 0) {
+            ctx.fillText(this.text, this.x, this.y)
+        }
+    }
+}
+
+class Line extends Shape {
+    constructor(x1, y1, x2, y2, borderColor = 'black', borderWidth = 1) {
+        super(x1, y1)
+        this.x2 = x2
+        this.y2 = y2
+        this.borderColor = borderColor
+        this.borderWidth = borderWidth
+    }
+    draw() {
+        Utils.drawShapeHelper('red', this.borderColor, this.borderWidth)
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y);
+        ctx.lineTo(this.x2, this.y2);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.fill();
     }
 }
 
@@ -89,9 +148,7 @@ class Rectangle extends Shape {
         let angle = Utils.degRad(this.rotation)
 
         ctx.lineJoin = 'round'
-        ctx.lineWidth = this.borderWidth;
-        ctx.fillStyle = Utils.parseColor(this.fill)
-        ctx.strokeStyle = Utils.parseColor(this.borderColor)
+        Utils.drawShapeHelper(this.fill, this.borderColor, this.borderWidth)
 
         function moveToRotated(lx, ly) {
             let xy = Utils.rotatePoint(lx, ly)
@@ -127,24 +184,64 @@ class Rectangle extends Shape {
     }
 }
 
-class Text extends Shape {
-    constructor(x, y, text, font, fontSize, fill = 'black', borderColor = 'black', borderWidth = 0) {
+class Circle extends Shape {
+    constructor(x, y, radius, fill = 'black', borderColor = 'black', borderWidth = 0) {
         super(x, y)
-        this.text = text
-        this.font = font
-        this.fontSize = fontSize
+        this.radius = radius
         this.fill = fill
         this.borderColor = borderColor
         this.borderWidth = borderWidth
     }
     draw() {
-        ctx.font = String(this.fontSize) + "px "+ this.font
-        ctx.lineWidth = this.borderWidth;
-        ctx.fillStyle = Utils.parseColor(this.fill)
-        ctx.strokeStyle = Utils.parseColor(this.borderColor)
-        ctx.fillText(this.text, this.x, this.y)
-        if (this.borderWidth > 0) {
-            ctx.fillText(this.text, this.x, this.y)
-        }
+        Utils.drawShapeHelper(this.fill, this.borderColor, this.borderWidth)
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.fill();
+    }
+}
+
+class Triangle extends Shape {
+    constructor(x1, y1, x2, y2, x3, y3, fill = 'black', borderColor = 'black', borderWidth = 0) {
+        super(x1, y1)
+        this.x2 = x2
+        this.y2 = y2
+        this.x3 = x3
+        this.y3 = y3
+        this.fill = fill
+        this.borderColor = borderColor
+        this.borderWidth = borderWidth
+    }
+    draw() {
+        Utils.drawShapeHelper(this.fill, this.borderColor, this.borderWidth)
+        ctx.beginPath()
+        ctx.moveTo(this.x, this.y)
+        ctx.lineTo(this.x2, this.y2)
+        ctx.lineTo(this.x3, this.y3)
+        ctx.lineTo(this.x, this.y)
+        ctx.closePath()
+        ctx.stroke()
+        ctx.fill()
+    }
+}
+
+class Oval extends Shape {
+    constructor(x, y, halfWidth, halfHeight, fill = 'black', borderColor = 'black', borderWidth = 0, rotation = 0) {
+        super(x, y)
+        this.halfWidth = halfWidth
+        this.halfHeight = halfHeight
+        this.fill = fill
+        this.borderColor = borderColor
+        this.borderWidth = borderWidth
+        this.rotation = rotation
+    }
+    draw() {
+        Utils.drawShapeHelper(this.fill, this.borderColor, this.borderWidth)
+        ctx.beginPath()
+        ctx.ellipse(this.x, this.y, this.halfWidth, this.halfHeight, this.rotation, 0, Math.PI * 2);
+        ctx.closePath()
+        ctx.stroke()
+        ctx.fill()
     }
 }

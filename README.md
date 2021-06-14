@@ -7,13 +7,13 @@
 ## SPEC
 
 ### Shapes
- - Point
+ - Point ✔️
  - Text
- - Line
- - Rectangle
- - Circle
- - Triangle
- - Oval
+ - Line ✔️
+ - Rectangle ✔️
+ - Circle ✔️
+ - Triangle ✔️
+ - Oval ✔️
  - Image
  - Sprite
  
@@ -21,6 +21,7 @@
  - 'render invisible'
 
 ### Methods
+ - background ✔️
  - write
  - alert
  - confirm
