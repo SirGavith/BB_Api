@@ -8,14 +8,14 @@
 
 ### Shapes
  - Point ✔️
- - Text
+ - Text ✔️
  - Line ✔️
  - Rectangle ✔️
  - Circle ✔️
  - Triangle ✔️
  - Oval ✔️
- - Image
- - Sprite
+ - Image ✔️
+ - Sprite ✔️
  
 ### Directives
  - 'render invisible'
