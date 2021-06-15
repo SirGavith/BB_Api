@@ -1,8 +1,9 @@
 # BB_Api
  Re-creation of the BlackBird JS Api
 
-## Contributing
- Locate the path to `main.html` and go there in a browser
+## Usage
+ Paste your blackbird code in `main.js`
+ Locate the path to `main.html` and navigate there in a browser
 
 ## SPEC
 
