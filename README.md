@@ -1,7 +1,7 @@
 # BB_Api
  Re-creation of the BlackBird JS Api
 
-##Contributing
+## Contributing
  Locate the path to `main.html` and go there in a browser
 
 ## SPEC
