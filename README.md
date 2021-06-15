@@ -2,8 +2,8 @@
  Re-creation of the BlackBird JS Api
 
 ## Usage
- Paste your blackbird code in `main.js`
- Locate the path to `main.html` and navigate there in a browser
+Paste your blackbird code in `main.js`
+Locate the path to `main.html` and navigate there in a browser
 
 ## SPEC
 
