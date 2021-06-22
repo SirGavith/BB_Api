@@ -9,6 +9,9 @@ class Shape {
     draw() {
         throw new Error("Method 'draw()' must be implemented.")
     }
+    getSAT() {
+        throw new Error("Method 'getSAT()' must be implemented.")
+    }
 }
 
 class Point extends Shape {
@@ -18,10 +21,13 @@ class Point extends Shape {
     draw() {
         new Circle(this.x, this.y, 3).draw()
     }
+    getSAT() {
+        return new SAT.Circle(new SAT.Vector(this.x, this.y), 5)
+    }
 }
 
 class Text extends Shape {
-    constructor(x, y, text, font, fontSize, fill = 'black', borderColor = 'black', borderWidth = 0) {
+    constructor(x, y, text, font = 'Ariel', fontSize = '15', fill = 'black', borderColor = 'black', borderWidth = 0) {
         super(x, y)
         this.text = text
         this.font = font.replace(' ', '-')
@@ -31,14 +37,37 @@ class Text extends Shape {
         this.borderWidth = borderWidth
     }
     draw() {
-        ctx.font = String(this.fontSize) + "px " + this.font
-        ctx.fillStyle = Utils.parseColor(this.fill)
-        ctx.lineWidth = this.borderWidth;
-        ctx.strokeStyle = Utils.parseColor(this.borderColor)
+        this.applyStyle()
         ctx.fillText(this.text, this.x, this.y)
         if (this.borderWidth > 0) {
             ctx.strokeText(this.text, this.x, this.y)
         }
+    }
+    applyStyle() {
+        ctx.font = String(this.fontSize) + "px " + this.font
+        ctx.fillStyle = Utils.parseColor(this.fill)
+        ctx.lineWidth = this.borderWidth;
+        ctx.strokeStyle = Utils.parseColor(this.borderColor)
+    }
+    getSAT() {
+        let xy = this.getRenderPos()
+        return new SAT.Box(new SAT.Vector(xy.x, xy.y),
+            this.getRenderWidth(),
+            this.getRenderHeight()
+        ).toPolygon();
+    }
+    getRenderPos() {
+        let xy = {}
+        xy.x = this.x
+        xy.y = this.y - this.getRenderHeight()
+        return xy
+    }
+    getRenderWidth() {
+        this.applyStyle()
+        return ctx.measureText(this.text).width
+    }
+    getRenderHeight() {
+        return this.fontSize * 2/3
     }
 }
 
@@ -58,6 +87,12 @@ class Line extends Shape {
         ctx.closePath();
         ctx.stroke();
         ctx.fill();
+    }
+    getSAT() {
+        return new SAT.Polygon(new SAT.Vector, [
+            new SAT.Vector(this.x1, this.y1),
+            new SAT.Vector(this.x2, this.y2)
+        ])
     }
 }
 
@@ -113,6 +148,14 @@ class Rectangle extends Shape {
             ctx.stroke();
         }
     }
+    getSAT() {
+        const p = new SAT.Box(new SAT.Vector(this.x, this.y), this.width, this.height)
+            .toPolygon();
+        if (this.rotation) {
+            p.rotate(Utils.degRad(this.rotation))
+        }
+        return p
+    }
 }
 
 class Circle extends Shape {
@@ -130,6 +173,9 @@ class Circle extends Shape {
         ctx.closePath();
         ctx.stroke();
         ctx.fill();
+    }
+    getSAT() {
+        return new SAT.Circle(new SAT.Vector(this.x, this.y), this.radius)
     }
 }
 
@@ -155,6 +201,13 @@ class Triangle extends Shape {
         ctx.stroke()
         ctx.fill()
     }
+    getSAT() {
+        return new SAT.Polygon(new SAT.Vector, [
+            new SAT.Vector(this.x, this.y),
+            new SAT.Vector(this.x2, this.y2),
+            new SAT.Vector(this.x3, this.y3)
+        ])
+    }
 }
 
 class Oval extends Shape {
@@ -175,10 +228,29 @@ class Oval extends Shape {
         ctx.stroke()
         ctx.fill()
     }
+    getSAT() {
+        let xy = this.getRenderPos()
+        return new SAT.Box(new SAT.Vector(xy.x, xy.y),
+            this.getRenderWidth(),
+            this.getRenderHeight()
+        ).toPolygon();
+    }
+    getRenderPos() {
+        let xy = {}
+        xy.x = this.x - this.halfWidth
+        xy.y = this.y - this.halfHeight
+        return xy
+    }
+    getRenderHeight() {
+        return this.halfHeight * 2
+    }
+    getRenderWidth() {
+        return this.halfWidth * 2
+    }
 }
 
 class Image extends Shape {
-    constructor(x, y, name, rotation = 0, scale = 1, center = false, width, height) {
+    constructor(x, y, name, rotation = 0, scale = 1, center = false, width, height, framesPerRow = 1, framesPerColumn = 1) {
         super(x, y)
         if (!name.includes('.')) {
             name += ".png"
@@ -189,51 +261,100 @@ class Image extends Shape {
         this.center = center
         this.width = width
         this.height = height
+        this.framesPerRow = framesPerRow
+        this.framesPerColumn = framesPerColumn
     }
-    draw(tileX = 0, tileY = 0, framesPerRow = 1, framesPerColumn = 1) {
+    draw(sprite = 0) {
+
+        let tileX = sprite % this.framesPerRow,
+            tileY = Math.floor(sprite / this.framesPerRow)
+
+        console.log('tile', tileX, tileY)
+
         if (!Object.keys(imgs).includes(this.name)) {
             throw new Error('Unknown image ' + this.name)
         }
         const img = imgs[this.name]
 
-        let dWidth = this.width, dHeight = this.height
-
-        if (!dWidth) {
-            dWidth = img.naturalWidth / framesPerRow
-        }
-        if (!dHeight) {
-            dHeight = img.naturalHeight / framesPerColumn
-        }
-
-        let sx = dWidth * tileX, sy = dHeight * tileY
+        let sx = this.getWidth() * tileX, sy = this.getHeight() * tileY
+        let offset = this.getCenterOffset()
         
-        let rotation = this.rotation, scale = this.scale
-        let dx = 0, dy = 0
-        if (this.center) {
-            dx -= dWidth / 2 * this.scale
-            dy -= dHeight / 2 * this.scale
-        }
-        console.log('drawing image', this.name, 'at', this.x, this.y)
-        
+        // console.log('drawing image', this, 'at', this.x, this.y, 'offset', offset)
+        // console.log(img, sx, sy, this.getWidth(), this.getHeight(), offset.x, offset.y, this.getRenderWidth(), this.getRenderHeight())
+
         ctx.translate(this.x, this.y);
-        ctx.rotate(Utils.degRad(rotation));
-        ctx.drawImage(img, sx, sy, dWidth, dHeight, dx, dy, dWidth * scale, dHeight * scale)
-        ctx.rotate(-Utils.degRad(rotation));
+        ctx.rotate(Utils.degRad(this.rotation));
+        ctx.drawImage(img, sx, sy, this.getWidth(), this.getHeight(), offset.x, offset.y, this.getRenderWidth(), this.getRenderHeight())
+        ctx.rotate(-Utils.degRad(this.rotation));
         ctx.translate(-this.x, -this.y);
-        
+    }
+    getSAT() {
+        let xy = this.getRenderPos()
+        const p = new SAT.Box(new SAT.Vector(xy.x, xy.y),
+            this.getRenderWidth(),
+            this.getRenderHeight()
+        ).toPolygon();
+        if (this.rotation) {
+            p.rotate(Utils.degRad(this.rotation))
+        }
+        return p
+    }
+    getRenderPos() {
+        let offset = this.getCenterOffset()
+        return {x:this.x + offset.x, y: this.y + offset.y}
+    }
+    getCenterOffset() {
+        let xy = {x:0, y:0}
+        if (this.center) {
+            xy.x -= this.getRenderWidth() / 2
+            xy.y -= this.getRenderHeight() / 2
+        }
+        return xy
+    }
+    getWidth() {
+        let w = this.width
+        if (!w) {
+            w = imgs[this.name].naturalWidth / this.framesPerRow
+        }
+        return w
+    }
+    getRenderWidth() {
+        return this.getWidth() * this.scale
+    }
+    getHeight() {
+        let h = this.height
+        if (!h) {
+            h = imgs[this.name].naturalHeight / this.framesPerColumn
+        }
+        return h
+    }
+    getRenderHeight() {
+       return this.getHeight() * this.scale
     }
 }
 
 class Sprite extends Image {
     constructor(x, y, name, framesPerRow, framesPerColumn, rotation = 0, scale = 1, center = false, width, height) {
-        super(x, y, name, rotation, scale, center, width, height)
-        this.framesPerRow = framesPerRow
-        this.framesPerColumn = framesPerColumn
+        super(x, y, name, rotation, scale, center, width, height, framesPerRow, framesPerColumn)
     }
-    draw(sprite) {
-        let sheetX = sprite % this.framesPerRow,
-            sheetY = Math.floor(sprite / this.framesPerRow)
-        new Image(this.x, this.y, this.name, this.rotation, this.scale, this.center, this.width, this.height)
-            .draw(sheetX, sheetY, this.framesPerRow, this.framesPerColumn)
-    }
+}
+
+function text() {
+    write(...arguments)
+}
+
+function rectangle() {
+    new Rectangle(...arguments).draw()
+}
+
+function circle() {
+    new Circle(...arguments).draw()
+}
+
+function triangle() {
+    new Triangle(...arguments).draw()
+}
+
+function image() {
+    new Image(...arguments).draw()
 }
