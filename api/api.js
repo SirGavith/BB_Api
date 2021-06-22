@@ -37,7 +37,7 @@ class Loader {
     }
 
     static async loadImages() {
-        console.log('loading images')
+        console.log('Loading images...')
         let imgPromises = []
         for (let i = 0; i < images.length; i++) {
             imgPromises.push(Loader.loadImage(images[i]))
@@ -48,7 +48,7 @@ class Loader {
     static loadMain() {
         const script = document.createElement("script")
         script.src = 'main.js'
-        console.log("running main.js")
+        console.log("Running main.js")
         body.appendChild(script)
         setTimeout(function () {
             const api2 = document.createElement("script")
@@ -66,7 +66,6 @@ class Loader {
     }
 
     static afterMain() {
-        console.log('after main.js')
         if (typeof (animate) === typeof (Function)) {
             animateIntervalId = setInterval(animate, 30);
         }

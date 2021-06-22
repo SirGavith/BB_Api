@@ -1,14 +1,9 @@
-console.log('in main.js')
+console.log('In main.js')
 
-addJSFile('otherFile.js')
+// Paste your code here!
+new Image(canvas.width / 2, canvas.height / 2, 'icon', 0, 0.75, true).draw()
 
-let optionsObject = {
-    font: 'cursive',
-    fontSize: 50,
-    fill: 'black',
-    borderColor: 'blue',
-    borderWidth: 3
-}
+//OR
 
-
-text(100, 200, 'This text is big and ugly!', optionsObject);
+// Link to other files here!
+addJSFile('src/myFile.js')
