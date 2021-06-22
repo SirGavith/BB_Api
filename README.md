@@ -1,5 +1,13 @@
 # BB_Api
- Re-creation of the BlackBird JS Api
+ Re-creation of the BlackBird JS Api  
+ Open an issue if you find a bug!
+
+## Why use this?
+ - BB_Api is free and open-source
+ - The js is run by the browser like any other js
+  - This means that this avoids all bugs that stem from Blackbird's custom interpreter
+  - It also means that you can use completely regular js alongside the helpful built-ins that Blackbird provides
+  - Since we sidestep the custom interpreter, it also means that using BB_Api is **SIGNIFICANTLY** more performant than on Blackbird. Some calculations that take several seconds on Blackbird can be executed nearly instantly!
 
 ## Usage
  - Paste your blackbird code in `main.js`
@@ -15,6 +23,9 @@
     "tileset.png"
 ]`
  - You can then use those images exactly as you would in Blackbird
+### Known issues
+ - `prompt()` cancel option returns `null`, not `false` (idk how to fix)
+ - transparency in colors does not work
 
 ## Spec
 

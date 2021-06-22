@@ -269,14 +269,14 @@ class Image extends Shape {
         let tileX = sprite % this.framesPerRow,
             tileY = Math.floor(sprite / this.framesPerRow)
 
-        console.log('tile', tileX, tileY)
+        // console.log('tile', tileX, tileY)
 
         if (!Object.keys(imgs).includes(this.name)) {
             throw new Error('Unknown image ' + this.name)
         }
         const img = imgs[this.name]
 
-        let sx = this.getWidth() * tileX, sy = this.getHeight() * tileY
+        let sx = this.getNaturalWidth() * tileX, sy = this.getNaturalHeight() * tileY
         let offset = this.getCenterOffset()
         
         // console.log('drawing image', this, 'at', this.x, this.y, 'offset', offset)
@@ -284,7 +284,7 @@ class Image extends Shape {
 
         ctx.translate(this.x, this.y);
         ctx.rotate(Utils.degRad(this.rotation));
-        ctx.drawImage(img, sx, sy, this.getWidth(), this.getHeight(), offset.x, offset.y, this.getRenderWidth(), this.getRenderHeight())
+        ctx.drawImage(img, sx, sy, this.getNaturalWidth(), this.getNaturalHeight(), offset.x, offset.y, this.getRenderWidth(), this.getRenderHeight())
         ctx.rotate(-Utils.degRad(this.rotation));
         ctx.translate(-this.x, -this.y);
     }
@@ -311,6 +311,9 @@ class Image extends Shape {
         }
         return xy
     }
+    getNaturalWidth() {
+        return imgs[this.name].naturalWidth / this.framesPerRow
+    }
     getWidth() {
         let w = this.width
         if (!w) {
@@ -320,6 +323,9 @@ class Image extends Shape {
     }
     getRenderWidth() {
         return this.getWidth() * this.scale
+    }
+    getNaturalHeight() {
+        return imgs[this.name].naturalHeight / this.framesPerColumn
     }
     getHeight() {
         let h = this.height

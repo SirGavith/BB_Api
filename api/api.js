@@ -54,7 +54,7 @@ class Loader {
             const api2 = document.createElement("script")
             api2.src = 'api/api2.js'
             body.appendChild(api2)
-        }, 1);
+        }, 5);
         canvas.addEventListener('mousemove', Events.mouseMove);
         canvas.addEventListener('mousedown', Events.mouseDown)
         canvas.addEventListener('mouseup', Events.mouseUp)
@@ -136,6 +136,7 @@ class CustomMoveEvent extends Events {
 }
 
 Loader.loadImages().then(() => Loader.loadMain())
+window.onresize = function () { canvas.height = window.innerHeight, canvas.width = window.innerWidth}
 
 class Utils {
     constructor() {
@@ -144,6 +145,9 @@ class Utils {
 
     static parseColor(color) {
         if (typeof (color) == "object") {
+            if (color.opacity) {
+                return String("rgba(" + color.red + "," + color.green + "," + color.blue + "," + color.opacity + ")")
+            }
             return String("rgb(" + color.red + "," + color.green + "," + color.blue + ")")
         } else {
             return color
