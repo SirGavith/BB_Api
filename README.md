@@ -99,3 +99,8 @@
  - onMouseUp ✔️
  - onKeyDown ✔️
  - onKeyUp ✔️
+
+## Credits
+ - Sir_Gavith for the creation of this Api
+ - Blackbird for making the original platform
+ - SAT.js and all its contributors github.com/jriecken/sat-js
